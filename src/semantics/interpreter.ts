@@ -2,7 +2,19 @@
 import { DataType, UnitType } from '../language/generated/ast.js';
 import { AdditiveExpression, Affectation, Block, BooleanExpression, ClockwiseCommand, Command, ControlCommand, Expression, ForwardCommand, FunctionCall, FunctionML, GetDistanceCommand, GetTimestampCommand, IfStatement, Instruction, LoopCommand, MovementCommand, MultiplicativeExpression, NumericExpression, Parameter, PrimaryExpression, Program, RoboMLVisitor, SetSpeedCommand, VariableDeclaration } from './visitor.js';
 
-
+export class variableStorage {
+    public value:any;
+    public type:string;
+    constructor(value:any,type:string){
+        this.value = value;
+        this.type = type;
+    }
+}
+export class Context {
+    public variables: Map<string, variableStorage> = new Map<string, variableStorage>();
+    public returnVal: any;
+    public isReturning = false;
+}
 // Import any other necessary modules or simulators
 
 export class RoboMLInterpreter implements RoboMLVisitor {
