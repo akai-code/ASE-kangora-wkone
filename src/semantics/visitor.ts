@@ -1,4 +1,5 @@
 import * as ASTInterfaces from '../language/generated/ast.js';
+import { InterpretorVisitor } from './interpreter.js';
 
 export interface RoboMLVisitor {
     visitProgram(node: ASTInterfaces.Program): any;
@@ -61,8 +62,8 @@ export class FunctionML implements ASTInterfaces.FunctionML {
         this.$container = $container;
     }
 
-    accept(visitor: RoboMLVisitor): any {
-        return visitor.visitFunctionML(this);
+    accept(_visitor: InterpretorVisitor): any {
+        console.log("je suis dans la fonction accept de FunctionML");
     }
 }
 

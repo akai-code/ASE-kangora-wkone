@@ -2,23 +2,22 @@ import type { DefaultSharedModuleContext, LangiumServices, LangiumSharedServices
 import { createDefaultModule, createDefaultSharedModule, inject } from 'langium';
 import { RobbotMlGeneratedModule, RobbotMlGeneratedSharedModule } from './generated/module.js';
 import { RobbotMlValidator, registerValidationChecks } from './robbot-ml-validator.js';
-import { RobbotMlAcceptWeaver, weaveAcceptMethods } from '../semantics/accept-weaver.js'; // Import the weaver
+import { weaveAcceptMethods } from '../semantics/accept-weaver.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type RobbotMlAddedServices = {
     validation: {
-        RobbotMlValidator: RobbotMlValidator;
-        RobbotMlAcceptWeaver: RobbotMlAcceptWeaver; // Add the weaver service
-    };
+        RobbotMlValidator: RobbotMlValidator
+    }
 }
 
 /**
  * Union of Langium default services and your custom services - use this as constructor parameter
  * of custom service classes.
  */
-export type RobbotMlServices = LangiumServices & RobbotMlAddedServices;
+export type RobbotMlServices = LangiumServices & RobbotMlAddedServices
 
 /**
  * Dependency injection module that overrides Langium default services and contributes the
@@ -27,8 +26,7 @@ export type RobbotMlServices = LangiumServices & RobbotMlAddedServices;
  */
 export const RobbotMlModule: Module<RobbotMlServices, PartialLangiumServices & RobbotMlAddedServices> = {
     validation: {
-        RobbotMlValidator: () => new RobbotMlValidator(),
-        RobbotMlAcceptWeaver: () => new RobbotMlAcceptWeaver() // Instantiate the weaver service
+        RobbotMlValidator: () => new RobbotMlValidator()
     }
 };
 
@@ -50,8 +48,7 @@ export const RobbotMlModule: Module<RobbotMlServices, PartialLangiumServices & R
 export function createRobbotMlServices(context: DefaultSharedModuleContext): {
     shared: LangiumSharedServices,
     RobbotMl: RobbotMlServices
-} 
-{
+} {
     const shared = inject(
         createDefaultSharedModule(context),
         RobbotMlGeneratedSharedModule
@@ -62,7 +59,9 @@ export function createRobbotMlServices(context: DefaultSharedModuleContext): {
         RobbotMlModule
     );
     shared.ServiceRegistry.register(RobbotMl);
-    weaveAcceptMethods(RobbotMl.validation as any); // Call the weaveAcceptMethods function
     registerValidationChecks(RobbotMl);
+    
+    weaveAcceptMethods(RobbotMl) ; //
+
     return { shared, RobbotMl };
 }

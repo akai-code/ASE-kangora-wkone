@@ -1,223 +1,233 @@
-// interpreter.ts
-import { DataType, UnitType } from '../language/generated/ast.js';
 import { AdditiveExpression, Affectation, Block, BooleanExpression, ClockwiseCommand, Command, ControlCommand, Expression, ForwardCommand, FunctionCall, FunctionML, GetDistanceCommand, GetTimestampCommand, IfStatement, Instruction, LoopCommand, MovementCommand, MultiplicativeExpression, NumericExpression, Parameter, PrimaryExpression, Program, RoboMLVisitor, SetSpeedCommand, VariableDeclaration } from './visitor.js';
+import { Scene } from '../web/scene.js';
+import { DataType, UnitType } from '../language/generated/ast.js';
+import { AstNode } from 'langium';
 
-export class variableStorage {
-    public value:any;
-    public type:string;
-    constructor(value:any,type:string){
-        this.value = value;
-        this.type = type;
-    }
-}
 export class Context {
     public variables: Map<string, variableStorage> = new Map<string, variableStorage>();
     public returnVal: any;
     public isReturning = false;
 }
-// Import any other necessary modules or simulators
 
-export class RoboMLInterpreter implements RoboMLVisitor {
-    // Méthode principale pour interpréter un programme
-    public visitProgram(program: Program): void {
-        program.functions.forEach(func => {
-            if (func.name === 'entry') {
-                // declenche visite de la fonction entry
-                this.visitFunctionML(func);
+export class variableStorage {
+    public value: any;
+    public type: string;
+    constructor(value: any, type: string) {
+        this.value = value;
+        this.type = type;
+    }
+}
+
+export class MyError {
+    // Définissez la structure de votre erreur si nécessaire
+}
+
+export class InterpretorVisitor implements RoboMLVisitor {
+    public typeErrors: MyError[] = [];
+    public robotinstruction: any[] = [];
+    public ctx = [new Context()];
+
+    public progNode: Program | undefined;
+
+    public scene: Scene;
+
+    ensureType(node: AstNode, type: string, value: any): void {
+        // Logique pour s'assurer que le type correspond
+        // ...
+    }
+
+    ensureLength(node: AstNode, length: number, index: any): void {
+        // Logique pour s'assurer que la longueur est correcte
+        // ...
+    }
+
+    getCurrentContext() {
+        return this.ctx[this.ctx.length - 1];
+    }
+
+    getVariable(name: string) {
+        // Logique pour récupérer la variable dans le contexte
+        // ...
+    }
+
+    setVariable(name: string, value: any) {
+        // Logique pour définir la variable dans le contexte
+        // ...
+    }
+
+    setListValue(name: string, value: any, index: number) {
+        // Logique pour définir la valeur dans la liste dans le contexte
+        // ...
+    }
+
+    printContext(): void {
+        console.log("Contexte actuel : " + Array.from(this.getCurrentContext().variables.keys()));
+    }
+
+    constructor(scene: Scene) {
+        this.scene = scene;
+    }
+
+    visit(node: Program, scene: Scene): any {
+        this.scene = scene;
+        this.progNode = node;
+        this.visitProgram(node);
+        return this.robotinstruction;
+    }
+
+    // Exemple de méthode visit :
+    visitProgram(node: Program): any {
+        const functionNames = new Set<string>();
+        // Vérifie que chaque fonction est unique
+        for (const func of node.functions) {
+            if (functionNames.has(func.name)) {
+                console.error(`La fonction '${func.name}' est définie plusieurs fois.`);
+                // Gérer l'erreur ou lancer une exception si nécessaire
+            } else {
+                functionNames.add(func.name);
             }
-            else {
-                // le programme ne peut pas etre interprete
-                throw new Error('Programme non interpretable');
-            }
-        });
-    }
-    // Méthode de visite pour interpréter une fonction
-    public visitFunctionML(FunctionML: FunctionML): any {
-        console.log(`Entering function: ${FunctionML.name}`);
-        // Visiter les paramètres
-        FunctionML.parameters.forEach(param => this.visitParameter(param));
-        // Visiter le corps de la fonction (block)
-        this.visitBlock(FunctionML.body);
-        console.log(`Exiting function: ${FunctionML.name}`);
-        return null;
-    }
-
-    visitParameter(Parameter: Parameter): any {
-        // stocker tous les parametres dans un contexte d'exécution
-        //Parameter.accept(this);
-        return null;
-    }
-    visitBlock(block: Block): any {
-        console.log('Entering block');
-        block.instructions.forEach(instruction => this.visitInstruction(instruction));
-        console.log('Exiting block');
-        return null;
-    }
-
-    visitInstruction(instruction: Instruction): any {
-        if (instruction instanceof Affectation) {
-            this.visitAffectation(instruction);
-        } else if ((instruction instanceof ClockwiseCommand) || instruction instanceof ForwardCommand || instruction instanceof SetSpeedCommand) {
-            this.visitMovementCommand(instruction);
-        } else if (instruction instanceof IfStatement) {
-            this.visitIfStatement(instruction);
-        } else if (instruction instanceof LoopCommand) {
-            this.visitLoopCommand(instruction);
-        } else if (instruction instanceof FunctionCall) {
-            this.visitFunctionCall(instruction);
-        } else if (instruction instanceof VariableDeclaration) {
-            this.visitVariableDeclaration(instruction);
-        } else if (instruction instanceof GetTimestampCommand) {
-            this.visitGetTimestampCommand(instruction);
-        } else if (instruction instanceof GetDistanceCommand) {
-            this.visitGetDistanceCommand(instruction);
-        } else if (instruction instanceof ControlCommand) {
-            this.visitControlCommand(instruction);
-        } else {
-            throw new Error('Instruction non prise en charge');
         }
-        // Ajoutez des branches pour les autres types d'instructions si nécessaire
-        return null;
-    }
-
-    visitAffectation(affectation: Affectation) {
-        console.log('Visiting Affectation');
-        const variableName = affectation.variable;
-        const expressionValue = this.evaluateExpression(affectation.expression);
-        // Affecter la valeur de l'expression à la variable
-        console.log(`Assigning ${expressionValue} to ${variableName}`);
-        return null;
-    }
-
-    visitCommand(command: Command) {
-        console.log('Visiting Command');
-        return null;
-    }
-
-    visitMovementCommand(movementCommand: MovementCommand) {
-        console.log('Visiting MovementCommand');
-        return null;
-    }
-
-    visitForwardCommand(forwardCommand: ForwardCommand) {
-        console.log('Visiting ForwardCommand');
-        const distanceValue = this.evaluateExpression(forwardCommand.distance);
-        const unitValue = forwardCommand.unit;
-        // Faire avancer le robot
-        console.log(`Moving forward ${distanceValue}${unitValue}`);
-    }
-
-    visitClockwiseCommand(clockwiseCommand: ClockwiseCommand) {
-        console.log('Visiting ClockwiseCommand');
-        const angleValue = this.evaluateExpression(clockwiseCommand.angle);
-        // Faire tourner le robot
-        console.log(`Turning clockwise ${angleValue}`);
-    }
-    visitSetSpeedCommand(setSpeedCommand: SetSpeedCommand) {
-        console.log('Visiting SetSpeedCommand');
-        const speedValue = this.evaluateExpression(setSpeedCommand.speed);
-        // Changer la vitesse du robot
-        console.log(`Setting speed to ${speedValue}`);
-    }
-    visitControlCommand(controlCommand: ControlCommand) {
-        console.log('Visiting ControlCommand');
-        return null;
-    }
-    visitIfStatement(ifStatement: IfStatement): any {
-        console.log('Visiting IfStatement');
-        const conditionValue = this.evaluateBooleanExpression(ifStatement.condition);
-        console.log(`Condition value: ${conditionValue}`);
-        // Mettez en œuvre la logique spécifique pour les instructions IfStatement ici
-        if (conditionValue) {
-            //this.visitBlock(ifStatement.ifBranch);
+        // Recherche de la fonction "entry"
+        const entryFunction = node.functions.find((f) => f.name === "entry");
+        if (entryFunction) {
+            entryFunction.accept(this); // Démarre l'interprétation à partir de la fonction "entry"
         } else {
-            //this.visitBlock(ifStatement.elseBranch);
+            console.error("Aucune fonction 'entry' trouvée dans le programme");
+            // Gérer l'erreur ou lancer une exception si nécessaire
         }
-        return null;
     }
-    visitLoopCommand(loopCommand: LoopCommand): any {
-        console.log('Visiting LoopCommand');
-        const variableName = loopCommand.variable;
-        const limitValue = this.evaluateExpression(loopCommand.limit);
-        // Mettez en œuvre la logique spécifique pour les boucles ici
-        console.log(`Looping with variable ${variableName} and limit ${limitValue}`);
-        //this.visitBlock(loopCommand.body);
-        return null;
+
+    visitFunctionML(node: FunctionML): any {
+        if (node.body) {
+            node.body.accept(this);
+        }
     }
-    visitGetTimestampCommand(getTimestampCommand: GetTimestampCommand): any {
-        console.log('Visiting GetTimestampCommand');
-        // Mettez en œuvre la logique spécifique pour les commandes GetTimestampCommand ici
-        return null;
+
+    visitParameter(node: Parameter): any {
+        // Logique pour interpréter un paramètre
+        // ...
+        console.log("Visiting Parameter");
     }
-    visitGetDistanceCommand(getDistanceCommand: GetDistanceCommand): any {
-        console.log('Visiting GetDistanceCommand');
-        // Mettez en œuvre la logique spécifique pour les commandes GetDistanceCommand ici
-        return null;
+
+    visitBlock(node: Block): any {
+        for (const instruction of node.instructions) {
+            instruction.accept(this);
+        }
     }
-    visitFunctionCall(functionCall: FunctionCall): any {
-        console.log('Visiting FunctionCall');
-        const functionName = functionCall.functionName;
-        //const argValues = functionCall.arg.map(arg => this.evaluateExpression(arg));
-        // Mettez en œuvre la logique spécifique pour les appels de fonction ici ${argValues}
-        console.log(`Calling function ${functionName} with arguments: `);
-        return null;
+
+    visitInstruction(node: Instruction): any {
+        // Logique pour interpréter une instruction
+        // ...
+        console.log("Visiting Instruction");
     }
-    visitVariableDeclaration(variableDeclaration: VariableDeclaration): any {
-        console.log('Visiting VariableDeclaration');
-        const initialValue = this.evaluateExpression(variableDeclaration.initialValue);
-        const variableType = variableDeclaration.type;
-        // Mettez en œuvre la logique spécifique pour les déclarations de variable ici
-        console.log(`Variable declared with initial value ${initialValue} and type ${variableType}`);
-        return null;
+
+    visitAffectation(node: Affectation): any {
+        // Logique pour interpréter une affectation
+        const variableName = node.variable;
+        const value = this.visitNumericExpression(node.expression);
+        this.setVariable(variableName, value);
     }
+
+    visitCommand(node: Command): any {
+        // Logique pour interpréter une commande
+        // ...
+        console.log("Visiting Command");
+    }
+
+    visitMovementCommand(node: MovementCommand): any {
+        // Logique pour interpréter une commande de mouvement
+        // ...
+        console.log("Visiting MovementCommand");
+    }
+
+    visitForwardCommand(node: ForwardCommand): any {
+        const distance = this.visitNumericExpression(node.distance);
+        // Utilisez la scène pour déplacer le robot en avant
+        this.scene.robot.move(distance);
+    }
+
+    visitClockwiseCommand(node: ClockwiseCommand): any {
+    const angle = this.visitNumericExpression(node.angle); // Assurez-vous d'implémenter visitNumericExpression
+    // Utilisez la scène pour faire tourner le robot dans le sens horaire
+    this.scene.robot.turn(angle)
+}
+
+    visitControlCommand(node: ControlCommand): any {
+        // Logique pour interpréter une commande de contrôle
+        // ...
+        console.log("Visiting ControlCommand");
+    }
+
+    visitIfStatement(node: IfStatement): any {
+        // Logique pour interpréter une instruction if
+        // ...
+        console.log("Visiting IfStatement");
+    }
+
+    visitLoopCommand(node: LoopCommand): any {
+        // Logique pour interpréter une commande de boucle
+        // ...
+        console.log("Visiting LoopCommand");
+    }
+
+    visitSetSpeedCommand(node: SetSpeedCommand): any {
+        const speed = this.visitNumericExpression(node.speed);
+        // Utilisez la scène pour définir la vitesse du robot
+        this.scene.robot.speed = speed;
+    }
+
+    visitGetDistanceCommand(node: GetDistanceCommand): any {
+        // Logique pour interpréter une commande de distance
+        // ...
+        console.log("Visiting GetDistanceCommand");
+    }
+
+    visitGetTimestampCommand(node: GetTimestampCommand): any {
+        // Logique pour interpréter une commande de timestamp
+        // ...
+        console.log("Visiting GetTimestampCommand");
+    }
+
+    visitVariableDeclaration(node: VariableDeclaration): any {
+        // Logique pour interpréter une déclaration de variable
+        // ...
+    }
+
+    visitFunctionCall(node: FunctionCall): any {
+        // Logique pour interpréter un appel de fonction
+        // ...
+    }
+
+    visitExpression(node: Expression): any {
+        // Logique pour interpréter une expression
+        // ...
+    }
+
     visitNumericExpression(node: NumericExpression): any {
-        const left = this.visitNumericExpression(node.left);
-        const right = this.visitNumericExpression(node.right);
+        // Logique pour interpréter une expression numérique
+        // ...
+    }
 
-        switch (node.op) {
-            case '+':
-                return left + right;
-            case '-':
-                return left - right;
-            case '*':
-                return left * right;
-            case '/':
-                return left / right;
-            // Gérez les autres opérateurs selon les besoins
-            default:
-                throw new Error(`Opérateur numérique non pris en charge: ${node.op}`);
-        }
-    }
     visitAdditiveExpression(node: AdditiveExpression): any {
-        console.log('Visiting AdditiveExpression');
-        const leftValue = this.evaluateExpression(node.$container);
-        const rightValue = node.right.accept(this);
-        const op = node.op;
-        const result = op === '+' ? leftValue + rightValue : leftValue - rightValue;
-        console.log(`Result of ${node.op} operation: ${result}`);
-        // Mettez en œuvre la logique spécifique pour les expressions additives ici
-        return result;
+        // Logique pour interpréter une expression additive
+        // ...
     }
-    visitMultiplicativeExpression(node: MultiplicativeExpression) {
-        console.log('Visiting MultiplicativeExpression');
-        const leftValue = this.evaluateExpression(node.$container);
-        const rightValue = node.right.accept(this);
-        const op = node.op;
-        const result = op === '*' ? leftValue * rightValue : leftValue / rightValue;
-        console.log(`Result of ${node.op} operation: ${result}`);
-        // Mettez en œuvre la logique spécifique pour les expressions multiplicatives ici
-        return result;
+
+    visitMultiplicativeExpression(node: MultiplicativeExpression): any {
+        // Logique pour interpréter une expression multiplicative
+        // ...
     }
-    visitPrimaryExpression(node: PrimaryExpression) {
-        console.log('Visiting PrimaryExpression');
-        // Mettez en œuvre la logique spécifique pour les expressions primaires ici
-        return this.evaluateExpression(node.$container);
+
+    visitPrimaryExpression(node: PrimaryExpression): any {
+        // Logique pour interpréter une expression primaire
+        // ...
     }
-    visitBooleanExpression(node: BooleanExpression) {
-        console.log('Visiting BooleanExpression');
-        // Mettez en œuvre la logique spécifique pour les expressions booléennes ici
-        return true;
+
+    visitBooleanExpression(node: BooleanExpression): any {
+        // Logique pour interpréter une expression booléenne
+        // ...
     }
+
     visitUnitType(node: UnitType) {
         console.log('Visiting UnitType');
         // Mettez en œuvre la logique spécifique pour les types d'unités ici
@@ -228,22 +238,19 @@ export class RoboMLInterpreter implements RoboMLVisitor {
         // Mettez en œuvre la logique spécifique pour les types de données ici
         return null;
     }
-    visitExpression(node: Expression) {
-        console.log('Visiting Expression');
-        // Mettez en œuvre la logique spécifique pour les expressions ici
-        return node.$container.accept(this);
-    }
+}
 
-    private evaluateExpression(expression: NumericExpression): number {
-        return 42;
-    }
-    private evaluateBooleanExpression(booleanExpression: BooleanExpression): boolean {
-        return true;
-    }
+export class interpreter {
+    static typeErors = [];
 
-    // propriétés interpret pour interpreter le programme
-    interpret (program: Program): void {
-        this.visitProgram(program);
+    static interpret(model: Program, scene: Scene): any[] {
+        this.typeErors = [];
+        const visitor = new InterpretorVisitor(scene);
+        const startTime = Date.now();
+        const statements = visitor.visit(model, scene);
+        //this.typeErors = visitor.typeErrors;
+        const endTime = Date.now();
+        console.log(`Interprétation a pris ${endTime - startTime}ms`);
+        return statements;
     }
-
 }
