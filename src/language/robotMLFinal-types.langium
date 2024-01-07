@@ -65,12 +65,12 @@ interface GetDistanceCommand extends Instruction {
 }
 
 interface ForwardCommand extends MovementCommand {
-    distance: NumericExpression;
+    distance: number;
     unit: UnitType;
 }
 
 interface ClockwiseCommand extends MovementCommand {
-    angle: NumericExpression;
+    angle: number;
 }
 
 interface FunctionCall extends Instruction {

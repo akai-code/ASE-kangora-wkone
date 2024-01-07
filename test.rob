@@ -1,4 +1,12 @@
- let void entry() {
+let void entry() {
     setSpeed(150 mm)
     var number count = 0
+    Forward 30 cm
+    Clock 90
+    Forward 300 mm
+    Clock 90
+    Forward 30 cm
+    Clock 90
+    Forward 300 mm
+    Clock 90
 }

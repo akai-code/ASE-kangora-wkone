@@ -13,26 +13,19 @@ editorConfig.setMainLanguageId('robbot-ml');       // WARNING Dependent of your 
 
 editorConfig.setMonarchTokensProvider(monarchSyntax);
 
-let code = `let void entry () {
+let code = `let void entry() {
+    setSpeed(150 mm)
     var number count = 0
-    loop count < 5
-    {	
-        setSpeed(500 * (count + 1))
-        count = count + 1
-        square(count)
-    }
+    Forward 30 cm
+    Clock 90
+    Forward 300 mm
+    Clock 90
+    Forward 30 cm
+    Clock 90
+    Forward 300 mm
+    Clock 90
 }
-
-let void square(number factor){
-    Forward 500 * factor
-    Clock 90
-    Forward 500 * factor
-    Clock 90
-    Forward 500 * factor
-    Clock 90
-    Forward 500 * factor
-    Clock 90
-}`
+`
 //editorConfig.setValue(code);
 
 editorConfig.setMainCode(code);
