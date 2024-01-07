@@ -1,195 +1,106 @@
 import type { ValidationAcceptor, ValidationChecks } from 'langium';
-import * as InterfaceAST from '../language/generated/ast.js';
+import * as ClassAST from './visitor.js';
 import { RoboMLVisitor } from './visitor.js';
-import type { RobbotMlServices } from '../language/robbot-ml-module.js';
+import * as InterfaceAST from '../language/generated/ast.js';
+import type { RobbotMlAstType } from '../language/generated/ast.js';
+import { RobbotMlServices } from '../language/robbot-ml-module.js';
 
+//import { RobbotMlServices } from '../language/robbot-ml-module.js';
+// import type { RoboMlServices } from '../language/robo-ml-module.js';
+
+
+/**
+ * Register custom validation checks.
+ * TODO : Call this function in the language module.ts file (see registerValidationChecks(...);)
+ */
 export function weaveAcceptMethods(services: RobbotMlServices) {
     const registry = services.validation.ValidationRegistry;
-    const weaver = new RobbotMlAcceptWeaver();
+    const weaver = new RoboMlAcceptWeaver()
     registry.register(weaver.checks, weaver);
 }
 
-export class RobbotMlAcceptWeaver {
-    weaveProgram(node: InterfaceAST.Program, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitProgram(node);
-        };
+/**
+ * TODO :
+ * You must implement a weaving function for each concrete concept of the language.
+ * you will also need to fill the check data structure to map the weaving function to the Type of node
+ */
+export class RoboMlAcceptWeaver {
+    weaveProgram(node : InterfaceAST.Program, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitProgram(node as ClassAST.Program);}
     }
 
-    weaveFunctionML(node: InterfaceAST.FunctionML, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitFunctionML(node);
-        };
+    weaveFunctionML(node : InterfaceAST.FunctionML, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitFunctionML(node as ClassAST.FunctionML);}
     }
 
-    weaveParameter(node: InterfaceAST.Parameter, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitParameter(node);
-        };
+    weaveBlock(node : InterfaceAST.Block, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitBlock(node as ClassAST.Block);}
     }
 
-    weaveBlock(node: InterfaceAST.Block, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitBlock(node);
-        };
+    weaveAffectation(node : InterfaceAST.Affectation, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitAffectation(node as ClassAST.Affectation);}
     }
 
-    weaveInstruction(node: InterfaceAST.Instruction, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitInstruction(node);
-        };
+    weaveNumericExpression(node : InterfaceAST.NumericExpression, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitNumericExpression(node as ClassAST.NumericExpression);}
     }
 
-    weaveAffectation(node: InterfaceAST.Affectation, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitAffectation(node);
-        };
+    weaveInstruction(node : InterfaceAST.Instruction, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitInstruction(node as ClassAST.Instruction);}
     }
 
-    weaveCommand(node: InterfaceAST.Command, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitCommand(node);
-        };
+    weaveExpression(node : InterfaceAST.Expression, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitExpression(node as ClassAST.Expression);}
     }
 
-    weaveMovementCommand(node: InterfaceAST.MovementCommand, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitMovementCommand(node);
-        };
+    weaveSetSpeedCommad(node : InterfaceAST.SetSpeedCommand, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitSetSpeedCommand(node as ClassAST.SetSpeedCommand);}
     }
 
-    weaveForwardCommand(node: InterfaceAST.ForwardCommand, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitForwardCommand(node);
-        };
+    weaveCommad(node : InterfaceAST.Command, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitCommand(node as ClassAST.Command);}
     }
 
-    weaveClockwiseCommand(node: InterfaceAST.ClockwiseCommand, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitClockwiseCommand(node);
-        };
+    weaveMovementCommad(node : InterfaceAST.MovementCommand, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitMovementCommand(node as ClassAST.MovementCommand);}
     }
 
-    weaveSetSpeedCommand(node: InterfaceAST.SetSpeedCommand, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitSetSpeedCommand(node);
-        };
+    weaveFunctionCall(node : InterfaceAST.FunctionCall, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitFunctionCall(node as ClassAST.FunctionCall);}
     }
 
-    weaveControlCommand(node: InterfaceAST.ControlCommand, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitControlCommand(node);
-        };
+    weaveVarialeDeclaration(node : InterfaceAST.VariableDeclaration, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitVariableDeclaration(node as ClassAST.VariableDeclaration);}
     }
 
-    weaveIfStatement(node: InterfaceAST.IfStatement, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitIfStatement(node);
-        };
+    weaveLoopCommand(node : InterfaceAST.LoopCommand, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitLoopCommand(node as ClassAST.LoopCommand);}
     }
 
-    weaveLoopCommand(node: InterfaceAST.LoopCommand, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitLoopCommand(node);
-        };
+    weaveClockwiseCommand(node : InterfaceAST.ClockwiseCommand, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitClockwiseCommand(node as ClassAST.ClockwiseCommand);}
     }
 
-    weaveGetTimestampCommand(node: InterfaceAST.GetTimestampCommand, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitGetTimestampCommand(node);
-        };
+    weaveForwardCommand(node : InterfaceAST.ForwardCommand, accept : ValidationAcceptor) : void{
+        (<any> node).accept = (visitor: RoboMLVisitor) => {return visitor.visitForwardCommand(node as ClassAST.ForwardCommand);}
     }
 
-    weaveGetDistanceCommand(node: InterfaceAST.GetDistanceCommand, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitGetDistanceCommand(node);
-        };
-    }
-
-    weaveFunctionCall(node: InterfaceAST.FunctionCall, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitFunctionCall(node);
-        };
-    }
-
-    weaveVariableDeclaration(node: InterfaceAST.VariableDeclaration, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitVariableDeclaration(node);
-        };
-    }
-
-    weaveNumericExpression(node: InterfaceAST.NumericExpression, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitNumericExpression(node);
-        };
-    }
-
-    weaveAdditiveExpression(node: InterfaceAST.AdditiveExpression, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitAdditiveExpression(node);
-        };
-    }
-
-    weaveMultiplicativeExpression(node: InterfaceAST.MultiplicativeExpression, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitMultiplicativeExpression(node);
-        };
-    }
-
-    weavePrimaryExpression(node: InterfaceAST.PrimaryExpression, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitPrimaryExpression(node);
-        };
-    }
-
-    weaveBooleanExpression(node: InterfaceAST.BooleanExpression, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitBooleanExpression(node);
-        };
-    }
-
-    weaveUnitType(node: InterfaceAST.UnitType, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitUnitType(node);
-        };
-    }
-
-    weaveDataType(node: InterfaceAST.DataType, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitDataType(node);
-        };
-    }
-
-    weaveExpression(node: InterfaceAST.Expression, accept: ValidationAcceptor): void {
-        (node as any).accept = (visitor: RoboMLVisitor) => {
-            return visitor.visitExpression(node);
-        };
-    }
-
-    checks: ValidationChecks<InterfaceAST.RobbotMlAstType> = {
-        Program: this.weaveProgram,
-        FunctionML: this.weaveFunctionML,
-        Parameter: this.weaveParameter,
-        Block: this.weaveBlock,
-        Instruction: this.weaveInstruction,
-        Affectation: this.weaveAffectation,
-        Command: this.weaveCommand,
-        MovementCommand: this.weaveMovementCommand,
-        ForwardCommand: this.weaveForwardCommand,
-        ClockwiseCommand: this.weaveClockwiseCommand,
-        SetSpeedCommand: this.weaveSetSpeedCommand,
-        ControlCommand: this.weaveControlCommand,
-        IfStatement: this.weaveIfStatement,
-        LoopCommand: this.weaveLoopCommand,
-        GetTimestampCommand: this.weaveGetTimestampCommand,
-        GetDistanceCommand: this.weaveGetDistanceCommand,
-        FunctionCall: this.weaveFunctionCall,
-        VariableDeclaration: this.weaveVariableDeclaration,
-        NumericExpression: this.weaveNumericExpression,
-        AdditiveExpression: this.weaveAdditiveExpression,
-        MultiplicativeExpression: this.weaveMultiplicativeExpression,
-        PrimaryExpression: this.weavePrimaryExpression,
-        BooleanExpression: this.weaveBooleanExpression,
-        Expression: this.weaveExpression,
+    checks: ValidationChecks<RobbotMlAstType> = {
+        Program : this.weaveProgram,
+        FunctionML : this.weaveFunctionML,
+        Block : this.weaveBlock,
+        Affectation : this.weaveAffectation,
+        Instruction : this.weaveInstruction,
+        NumericExpression : this.weaveNumericExpression,
+        Expression : this.weaveExpression,
+        SetSpeedCommand : this.weaveSetSpeedCommad,
+        Command : this.weaveCommad,
+        MovementCommand : this.weaveMovementCommad,
+        FunctionCall : this.weaveFunctionCall,
+        VariableDeclaration : this.weaveVarialeDeclaration,
+        LoopCommand : this.weaveLoopCommand,
+        ClockwiseCommand : this.weaveClockwiseCommand,
+        ForwardCommand : this.weaveForwardCommand
     };
+
 }

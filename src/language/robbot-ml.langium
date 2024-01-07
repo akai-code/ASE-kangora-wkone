@@ -76,7 +76,7 @@ FunctionCall returns FunctionCall:
 ;
 
 VariableDeclaration returns VariableDeclaration:
-    'var' type=DataType name=ID '=' initialValue=INT
+    'var' type=DataType name=ID '=' initialValue=NumericExpression
 ;
 
 NumericExpression returns NumericExpression:

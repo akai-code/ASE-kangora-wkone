@@ -84,7 +84,7 @@ interface CustomCommand extends FunctionCall {
 
 interface VariableDeclaration extends NamedElement {
     type?: DataType;
-    initialValue?: number;
+    initialValue: NumericExpression;
 }
 
 interface NumericExpression extends Expression {

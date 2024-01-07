@@ -1,6 +1,6 @@
 import { MonacoEditorLanguageClientWrapper, vscode } from './monaco-editor-wrapper/index.js';
 import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
-import monarchSyntax from "../syntaxes/robbot-ml.monarch.js";
+import monarchSyntax from "../../syntaxes/robbot-ml.monarch.js";
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
@@ -8,7 +8,6 @@ MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
 
 const client = new MonacoEditorLanguageClientWrapper();
 const editorConfig = client.getEditorConfig();
-print(editorConfig);
 editorConfig.setMainLanguageId('robbot-ml');       // WARNING Dependent of your project
 
 editorConfig.setMonarchTokensProvider(monarchSyntax);
@@ -33,7 +32,6 @@ let void square(number factor){
     Forward 500 * factor
     Clock 90
 }`
-//editorConfig.setValue(code);
 
 editorConfig.setMainCode(code);
 

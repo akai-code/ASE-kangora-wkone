@@ -1,4 +1,0 @@
- let void entry() {
-    setSpeed(150 mm)
-    var number count = 0
-}
