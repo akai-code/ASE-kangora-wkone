@@ -225,7 +225,9 @@ export class InterpretorVisitor implements RoboMLVisitor {
     
 
     visitSetSpeedCommand(node: SetSpeedCommand): any {
+        console.log("Speed ::" + node.speed);
         const speed = this.visitNumericExpression(node.speed);
+        console.log("vitesse : " + speed);
         // Utilisez la scène pour définir la vitesse du robot
         this.scene.robot.speed = speed;
     }
