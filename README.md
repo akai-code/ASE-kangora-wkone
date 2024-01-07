@@ -46,9 +46,17 @@ After defining the structure of our language using Eclipse Modeling Framework (E
 
 ![Tree-Sctructure](./img/arborescant.png)
 
-The interpreter is implemented in TypeScript and runs on a web-based simulator for the robot. It utilizes the visitor design pattern to traverse the Abstract Syntax Tree (AST) generated from parsed RoboML code. The interpreter simulates the robot's behavior according to the code.
+#### 1. **Interpreter.ts**
 
-### Compiling RoboML Code
+The `Interpreter.ts` file constitutes the heart of the RoboML code execution process using a dedicated web simulator. The implementation is based on the **visitor's design pattern**, which allows traversal of the Abstract Syntax Tree (AST) generated from the analyzed RoboML code. The `visitor.ts` file plays a key role in defining the `RoboMLVisitor` interface including methods to visit each AST node type, while concrete classes are created for each AST concept in this file. These classes implement the methods of the visitor interface, allowing the interpreter to navigate and execute logic based on the structure of the AST. The add-on file `accept-weaver.ts` is crucial for dynamically associating visit methods with AST nodes, thus facilitating the link between the abstract behavior specified in the visitor interface and the concrete implementation in the interpreter.
+
+**Context management** is provided by the `Context` class within the `Interpreter.ts` file, encompassing variables, the return value, and a flag indicating whether the interpreter is currently in a return statement. This context is essential for tracking variables and controlling execution flow. At the same time, the web simulator is integrated to execute the robot's instructions. The `Scene` class represents the simulation environment and is passed to the `InterpreterVisitor` during instantiation. Throughout traversal of the AST, the interpreter generates a sequence of robotic instructions which are then executed in the simulator, replicating the behavior of the robot as specified in the RoboML code.
+
+This modular and extensible concept, combining the visitor pattern, context management, and the integration of a web simulator, offers a clear and structured approach for the implementation of the RoboML interpreter. The separation of concerns ensures easy maintenance and the ability to extend or modify the language consistently, making this implementation a robust and adaptable solution.
+
+To facilitate testing and ensure proper traversal of the AST, command-line tests were conducted using a test file (`test.rob`) and the following command: `node .\bin\cli.js interpret .\test.rob`. This approach allowed for meticulous testing of each AST node, ensuring that the visits occurred as intended and verifying the functionality of each node in the AST.
+
+#### 2.**Compiling.ts**
 
 The compiler translates RoboML code into Arduino code, enabling the robot to execute the specified behavior. Similar to the interpreter, the compiler uses the visitor pattern to traverse the AST and generate Arduino-compatible code.
 
