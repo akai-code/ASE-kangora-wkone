@@ -38,14 +38,13 @@ Defines the unit type for distance measurements and data types such as boolean, 
 
 ## Textual Modeling with Langium
 
-Après avoir défini la structure de notre langage sur Eclipse Modeling Framework (EMF),nous avons basculé sur visual studio code pour la partie éditeur de texte. Nous avons utilisé Langium, un framework qui permet de générer un éditeur de texte à partir d’un méta-modèle EMF. Il est basé sur le langage de programmation TypeScript et utilise le framework Xtext pour générer le code source de l’éditeur. Il permet de générer un éditeur de texte avec des fonctionnalités de coloration syntaxique, d’autocompletion, de validation et de navigation. Il permet aussi de générer un serveur LSP (Language Server Protocol) qui permet d’intégrer l’éditeur de texte avec d’autres IDEs comme Eclipse, Visual Studio Code, Atom, etc.
+After defining the structure of our language using Eclipse Modeling Framework (EMF), we transitioned to Visual Studio Code for the text editor. We utilized Langium, a framework that generates a text editor from an EMF metamodel. Based on TypeScript and leveraging the Xtext framework, Langium generates source code for the editor with features like syntax highlighting, autocompletion, validation, and navigation. Additionally, it produces a Language Server Protocol (LSP) server for seamless integration with IDEs like Eclipse, Visual Studio Code, Atom, etc.
 
-![RoboML Langium Grammar](./img/grammar.jpeg)
+![RoboML Langium Grammar](./img/gramar.png)
 
+### Interpreting and compiling RoboML Code
 
-The second part focuses on defining the Langium grammar and editor for the DSL. We used the TypeScript-based Langium workbench to build a Visual Studio Code extension. This extension allows users to edit RoboML code with syntax highlighting and autocompletion.
-
-### Interpreting RoboML Code
+![Tree-Sctructure](./img/arborescant.png)
 
 The interpreter is implemented in TypeScript and runs on a web-based simulator for the robot. It utilizes the visitor design pattern to traverse the Abstract Syntax Tree (AST) generated from parsed RoboML code. The interpreter simulates the robot's behavior according to the code.
 
