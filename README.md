@@ -10,7 +10,7 @@ In the first part of the project, we defined the language's metamodel using Ecor
 
 Below is an example of the Ecore metamodel:
 
-![RoboML Ecore Metamodel](./img/metamodel.png)
+![RoboML Ecore Metamodel](./img/metamodel.jpeg)
 
 In this metamodel, classes such as `Movement`, `Rotation`, `Speed`, `Sensors`, etc., capture the essential concepts of the RoboML language.
 
