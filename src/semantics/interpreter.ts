@@ -32,13 +32,19 @@ export class InterpretorVisitor implements RoboMLVisitor {
     public scene: Scene;
 
     ensureType(node: AstNode, type: string, value: any): void {
-        // Logique pour s'assurer que le type correspond
-        // ...
+        const variableType = typeof value;
+        if (variableType !== type) {
+            console.error(`Type mismatch in variable. Expected '${type}', but got '${variableType}'.`);
+            // Gérer l'erreur ou lancer une exception si nécessaire
+        }
     }
 
     ensureLength(node: AstNode, length: number, index: any): void {
-        // Logique pour s'assurer que la longueur est correcte
-        // ...
+        const variableLength = index.length;
+        if (variableLength !== length) {
+            console.error(`Length mismatch in variable. Expected length '${length}', but got '${variableLength}'.`);
+            // Gérer l'erreur ou lancer une exception si nécessaire
+        }
     }
 
     getCurrentContext() {
@@ -46,19 +52,47 @@ export class InterpretorVisitor implements RoboMLVisitor {
     }
 
     getVariable(name: string) {
-        // Logique pour récupérer la variable dans le contexte
-        // ...
+        const context = this.getCurrentContext();
+        if (context.variables.has(name)) {
+            return context.variables.get(name)?.value;
+        } else {
+            console.error(`Variable '${name}' not found in the current context.`);
+            // Gérer l'erreur ou lancer une exception si nécessaire
+        }
     }
 
     setVariable(name: string, value: any) {
-        // Logique pour définir la variable dans le contexte
-        // ...
+        const context = this.getCurrentContext();
+        const variable = context.variables.get(name);    
+        if (variable != null) {
+            variable.value = value;
+        } else {
+            console.error(`Variable '${name}' not found in the current context.`);
+            // Gérer l'erreur ou lancer une exception si nécessaire
+        }
     }
 
     setListValue(name: string, value: any, index: number) {
-        // Logique pour définir la valeur dans la liste dans le contexte
-        // ...
-    }
+        const context = this.getCurrentContext();
+        const variable = context.variables.get(name);
+    
+        if (variable !== undefined) {
+            if (variable.type === 'array') {
+                if (index >= 0 && index < variable.value.length) {
+                    variable.value[index] = value;
+                } else {
+                    console.error(`Index '${index}' out of bounds for array variable '${name}'.`);
+                    // Gérer l'erreur ou lancer une exception si nécessaire
+                }
+            } else {
+                console.error(`Variable '${name}' is not an array.`);
+                // Gérer l'erreur ou lancer une exception si nécessaire
+            }
+        } else {
+            console.error(`Variable '${name}' not found in the current context.`);
+            // Gérer l'erreur ou lancer une exception si nécessaire
+        }
+    }    
 
     printContext(): void {
         console.log("Contexte actuel : " + Array.from(this.getCurrentContext().variables.keys()));
@@ -165,10 +199,30 @@ export class InterpretorVisitor implements RoboMLVisitor {
     }
 
     visitLoopCommand(node: LoopCommand): any {
-        // Logique pour interpréter une commande de boucle
-        // ...
+        const context = this.getCurrentContext();
+        const variableName = node.variable;
+        const limit = this.visitNumericExpression(node.limit)
+    
+        if (!context.variables.has(variableName)) {
+            context.variables.set(variableName, new variableStorage(0, 'number'));
+        }
+    
+        while (context.variables.has(variableName) && context.variables.get(variableName)!.value < limit) {
+            for (const instruction of node.body) {
+                instruction.accept(this);
+            }
+            // Mettez à jour la variable de boucle
+            context.variables.get(variableName)!.value += 1;
+    
+            // Vérifiez à nouveau la condition après la mise à jour
+            if (context.variables.get(variableName)!.value >= limit) {
+                break; // Sortez de la boucle si la condition n'est plus satisfaite
+            }
+        }
         console.log("Visiting LoopCommand");
     }
+    
+    
 
     visitSetSpeedCommand(node: SetSpeedCommand): any {
         const speed = this.visitNumericExpression(node.speed);
@@ -189,43 +243,134 @@ export class InterpretorVisitor implements RoboMLVisitor {
     }
 
     visitVariableDeclaration(node: VariableDeclaration): any {
-        // Logique pour interpréter une déclaration de variable
-        // ...
+        const context = this.getCurrentContext();
+        console.log("Current context : " + Array.from(context.variables.keys()));
+        const variableName = node.name;
+        const type = node.type;
+        const initialValue = node.initialValue
+        console.log("Variable name : " + variableName);
+        console.log("Variable type : " + type);
+        console.log("Variable initial value : " + initialValue);
+    
+        if (!context.variables.has(variableName)) {
+            if (type === 'number') {
+                if (initialValue !== null) {
+                    this.ensureType(node, 'number', initialValue);
+                }
+                context.variables.set(variableName, new variableStorage(initialValue || 0, 'number'));
+            } else {
+                // Handle the case where an unsupported data type is encountered
+                //this.typeErrors.push(new MyError(0, `Unsupported data type '${type}'.`, 'TypeError'));
+            }
+        } else {
+            // Handle the case where the variable is already declared in the current context
+            //this.typeErrors.push(new MyError(0, `Variable '${variableName}' is already declared in the current context.`, 'VariableError'));
+        }
     }
 
     visitFunctionCall(node: FunctionCall): any {
-        // Logique pour interpréter un appel de fonction
-        // ...
+        // const context = this.getCurrentContext();
+        const functionName = node.functionName;
+        const targetFunction = this.progNode?.functions.find((func) => func.name === functionName);
+
+        if (targetFunction) {
+            const newContext = new Context();
+            this.ctx.push(newContext);
+
+            if (node.arg) {
+                node.arg.forEach((arg, index) => {
+                    //const parameter = targetFunction.parameters[index];
+                    //const value = arg.accept(this);
+                    //newContext.variables.set(parameter.name, new variableStorage(value, parameter.type));
+                });
+            }
+
+            targetFunction.body?.accept(this);
+
+            const returnValue = newContext.returnVal;
+            this.ctx.pop(); // Pop the function context
+            return returnValue;
+        } else {
+            return null;
+        }
     }
 
     visitExpression(node: Expression): any {
-        // Logique pour interpréter une expression
-        // ...
+        //return node.accept(this);
     }
 
     visitNumericExpression(node: NumericExpression): any {
-        // Logique pour interpréter une expression numérique
-        // ...
+        if (node instanceof AdditiveExpression) {
+            return this.visitAdditiveExpression(node);
+        } else if (node instanceof MultiplicativeExpression) {
+            return this.visitMultiplicativeExpression(node);
+        } else if (node instanceof PrimaryExpression) {
+            return this.visitPrimaryExpression(node);
+        }
     }
 
     visitAdditiveExpression(node: AdditiveExpression): any {
-        // Logique pour interpréter une expression additive
-        // ...
+        const left = node.$container.left.accept(this);
+        const right = node.right.accept(this);
+
+        if (node.op === '+') {
+            return left + right;
+        } else if (node.op === '-') {
+            return left - right;
+        }
+
+        //this.typeErrors.push(new MyError(0, `Unsupported operator '${node.operator}' in additive expression.`, 'OperatorError'));
+        return null;
     }
 
     visitMultiplicativeExpression(node: MultiplicativeExpression): any {
-        // Logique pour interpréter une expression multiplicative
-        // ...
+        const left = node.$container.left.accept(this);
+        const right = node.right.accept(this);
+
+        if (node.op === '*') {
+            return left * right;
+        } else if (node.op === '/') {
+            if (right !== 0) {
+                return left / right;
+            } else {
+                //this.typeErrors.push(new MyError(0, `Division by zero in multiplicative expression.`, 'DivisionError'));
+                return null;
+            }
+        }
+
+        //this.typeErrors.push(new MyError(0, `Unsupported operator '${node.operator}' in multiplicative expression.`, 'OperatorError'));
+        return null;
     }
 
     visitPrimaryExpression(node: PrimaryExpression): any {
-        // Logique pour interpréter une expression primaire
-        // ...
+        if (node instanceof NumericExpression) {
+            return this.visitNumericExpression(node);
+        } else if (typeof node === 'number') {
+            return node; // It's an INT
+        } else if (node instanceof FunctionCall) {
+            return this.visitFunctionCall(node);
+        } else {
+            //this.typeErrors.push(new MyError(0, `Invalid primary expression.`, 'ExpressionError'));
+            return null;
+        }
     }
 
     visitBooleanExpression(node: BooleanExpression): any {
-        // Logique pour interpréter une expression booléenne
-        // ...
+        const left = node.left.accept(this);
+        const right = node.right.accept(this);
+
+        if (node.operator == '<') {
+            return left < right;
+        } else if (node.operator === '>') {
+            return left > right;
+        } else if (node.operator === '==') {
+            return left === right;
+        } else if (node.operator === '!=') {
+            return left !== right;
+        }
+
+        //this.typeErrors.push(new MyError(0, `Unsupported operator '${node.operator}' in boolean expression.`, 'OperatorError'));
+        return null;
     }
 
     visitUnitType(node: UnitType) {

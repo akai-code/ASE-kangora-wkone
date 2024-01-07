@@ -306,14 +306,16 @@ export class FunctionCall implements ASTInterfaces.FunctionCall {
 
 export class VariableDeclaration implements ASTInterfaces.VariableDeclaration {
     $type: 'VariableDeclaration' = 'VariableDeclaration';
-    initialValue: NumericExpression;
+    initialValue: number
     type: ASTInterfaces.DataType;
+    name: string;
     $container: ASTInterfaces.GetTimestampCommand | ASTInterfaces.GetDistanceCommand;
 
-    constructor(initialValue: NumericExpression, type: ASTInterfaces.DataType, $container: ASTInterfaces.GetTimestampCommand | ASTInterfaces.GetDistanceCommand) {
+    constructor(name: string,initialValue: number, type: ASTInterfaces.DataType, $container: ASTInterfaces.GetTimestampCommand | ASTInterfaces.GetDistanceCommand) {
         this.initialValue = initialValue;
         this.type = type;
         this.$container = $container;
+        this.name = name;
     }
 
     accept(visitor: RoboMLVisitor): any {
@@ -390,9 +392,15 @@ export class PrimaryExpression implements ASTInterfaces.PrimaryExpression {
 export class BooleanExpression implements ASTInterfaces.BooleanExpression {
     $type: 'BooleanExpression' = 'BooleanExpression';
     $container: ASTInterfaces.IfStatement;
+    left: NumericExpression; // Adjust the type based on your actual structure
+    right: NumericExpression;
+    operator: '==' | '!=' | '<' | '>' | '<=' | '>=';
     
-    constructor($container: ASTInterfaces.IfStatement) {
+    constructor($container: ASTInterfaces.IfStatement, left: NumericExpression, operator: '==' | '!=' | '<' | '>' | '<=' | '>=', right: NumericExpression) {
         this.$container = $container;
+        this.left = left;
+        this.right = right;
+        this.operator = operator;
     }
 
     accept(visitor: RoboMLVisitor): any {

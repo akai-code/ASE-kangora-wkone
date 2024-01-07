@@ -46,6 +46,7 @@ export const parseAndInterprete = async (fileName: string): Promise<void> => {
 
     const services = createRobbotMlServices(NodeFileSystem).RobbotMl;
     const ast = await extractAstNode<Program>("test.rob",services) ;
+    console.log('AST ::::', ast);
 
     // Créez une instance de la scène
     const scene: Scene = new BaseScene();
