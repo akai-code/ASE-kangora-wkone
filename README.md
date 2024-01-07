@@ -22,61 +22,18 @@ Contains an ensemble of instructions within a function, providing a structured w
 #### 5. **Instruction:**
 Represents a generic instruction within the RoboML language, constituting the fundamental building blocks that define the robot's behavior. Instructions include commands, variable declarations, and more.
 
-#### 6. **Affectation:**
-   - **Description:** Represents an assignment operation within an instruction.
-   - **Explanation:** Assigns a value to a variable, enabling the manipulation and storage of data during program execution.
+#### 6. **Different Types of Instructions:**
+   - **Affectation:** Assigns a value to a variable, facilitating the manipulation and storage of data during program execution.
+   - **Command:** Essential for directing the robot's behavior, encompassing movement commands, control commands, and function calls.
+   - **MovementCommand:** Controls the robot's translational and rotational motion.
+   - **ControlCommand:** Manages the flow of execution based on specified conditions or loops.
+   - **IfStatement:** Allows conditional execution of a block of instructions based on a specified boolean condition.
+   - **LoopCommand:** Executes a block of instructions repeatedly as long as a specified condition holds true.
+   - **GetTimestampCommand:** Retrieves the timestamp and assigns it to a variable.
+   - **Etc. , Etc.**
 
-#### 7. **Command:**
-   - **Description:** Represents a command that controls the robot's movements or performs specific actions.
-   - **Explanation:** Commands are essential for directing the robot's behavior. They include movement commands, control commands, and function calls.
-
-#### 8. **MovementCommand:**
-   - **Description:** Defines commands related to the robot's movement.
-   - **Explanation:** Movement commands control the robot's translational and rotational motion.
-
-#### 9. **ControlCommand:**
-   - **Description:** Represents control flow commands such as if statements and loop commands.
-   - **Explanation:** Control commands manage the flow of execution based on specified conditions or loops.
-
-#### 10. **IfStatement:**
-   - **Description:** Represents an if statement within the control flow.
-   - **Explanation:** Allows conditional execution of a block of instructions based on a specified boolean condition.
-
-#### 11. **LoopCommand:**
-   - **Description:** Represents a loop statement within the control flow.
-   - **Explanation:** Executes a block of instructions repeatedly as long as a specified condition holds true.
-
-#### 12. **GetTimestampCommand:**
-   - **Description:** Retrieves the timestamp and assigns it to a variable.
-   - **Explanation:** Useful for time-related operations within the program.
-
-#### 13. **GetDistanceCommand:**
-   - **Description:** Retrieves the distance and assigns it to a variable.
-   - **Explanation:** Enables the robot to measure and use distances in its computations.
-
-#### 14. **FunctionCall:**
-   - **Description:** Represents a call to another function within the program.
-   - **Explanation:** Enables the reuse of code by invoking the behavior defined in other functions.
-
-#### 15. **VariableDeclaration:**
-   - **Description:** Declares a variable within the program.
-   - **Explanation:** Variables are used for storing and managing data during program execution.
-
-#### 16. **NumericExpression:**
-   - **Description:** Represents expressions involving numeric values.
-   - **Explanation:** Numeric expressions are fundamental for mathematical operations within the language.
-
-#### 17. **BooleanExpression:**
-   - **Description:** Represents expressions involving boolean values.
-   - **Explanation:** Enables conditional branching and logical operations within the program.
-
-#### 18. **UnitType:**
-   - **Description:** Defines the unit type for distance measurements.
-   - **Explanation:** Provides a standardized way to represent units such as centimeters (cm) or millimeters (mm).
-
-#### 19. **DataType:**
-   - **Description:** Represents data types such as boolean, number, or void.
-   - **Explanation:** Specifies the type of data associated with variables, function return values, and parameters.
+#### 7. **UnitType and DataType:**
+Defines the unit type for distance measurements and data types such as boolean, number, or void. Offers a standardized representation for units (e.g., centimeters - cm, millimeters - mm) and specifies the data type associated with variables, function return values, and parameters.
 
 
 ## Textual Modeling with Langium
