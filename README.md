@@ -60,9 +60,9 @@ To facilitate testing and ensure proper traversal of the AST, command-line tests
 
 The compiler translates RoboML code into Arduino code, enabling the robot to execute the specified behavior. Similar to the interpreter, the compiler uses the visitor pattern to traverse the AST and generate Arduino-compatible code.
 
-## Demo
+## Simulator
 
-Watch a demo of the RoboML DSL project in action [here](link/to/demo/video).
+![Simulator](./img/simulator.jpeg)
 
 ## Summary and Challenges
 
