@@ -115,17 +115,50 @@ Ce compilateur resoud les problems suisvant :
 * Avoir du code c arduino optimisé pour nos robots. En effet il n'est pas evident aux non specialistes d'ecrire du code optimisé dans les languages de bas niveaux.
 
 #### Principle of implementation
+
 ##### pattern visitor
-   priniple --> permet de separer ...
 
-##### extension de classe 
-principle --> permet de ....
+![Texte alternatif](Visitor.png)
 
-##### Ast parse diagram with visitor patter
+Le pattern visiteur est un patron qui permet de separer la structure de donnée et l'algorithm qui lui sera appliqué. Ainsi on separe les preocupations d'evolutions de la structure de donnée et l'algorithm. Chacun des deux entités peuvent evoluer de façon independante sans s'impacté mutuellement.
+En pratique la mise en place du pattern visiteur fait intervenir deux entités :
+* les classes à visiter : ce sont les structures de données (les classes) sur lesquelles on doit appliquer des algorithms. En principe de la POO, les algorithms sont sensés se trouver dans ces classes directement et dans ce cas l'evolution des algorithms implique la modification de des classes (ce que l'on veut justement eviter car les classes sont souvent fermées c'est à dire pas accessible au developpeur des algorithms)
+* l'interface visiteur : qui permet definit les methodes de visite de chaque chaque structure données. Il s'agit des methodes qui contiendrons les algorithm à appliquer à chaque structure de donnée.
+L'interface permet de decoupler les methodes de leurs implementation. Ce qui permet de faire evoluer les implementations sans regression sur les classes qui utilisent l'interface qui definit les methodes.
+* le visiteur concret : c'est une implementation de l'interface visiteur qui va permettre de donner une implementation de chaque methode de visite.
 
-##### what we have done
+##### class extention
+L'extention de classe permet d'ajouter une nouvelle methode à un un objet de façon dynamique (sans ajouté la methode au niveau de la classe de l'objet).
+Cela peur etre util pour ajouter de nouvelle methode à un objet d'une classe fermée (une classe dont on pas accès au code) ou une classe dont on ne veut pas modifier le code.
 
-##### what have done
+##### Mise en place du pattern visiteur pour notre compilateur
+
+![Texte alternatif](pattern_apply.png)
+
+Dans le cadre de notre compilateur, les structrures de donnés ou encore classe à visiter sont les differents concepts de notre classe.
+Dans l'interface visiteur on definit les methodes de visite de chaque concepts. Dans les visiteurs concrets, on donne une implement de ces methodes qui traduise le concept visiter en son concept equivalent du language c arduino.
+Les classe concepts sont generés par languim automatiquement. ce qui fait que ces classes sont fermées pour nous. On utilise donc le mecanisme d'extention de classe pour ajouter dynamiquement les accept(visitor) à ces classes concepts .
+##### Ast parse diagram with visitor pattern
+
+![Texte alternatif](lien_vers_image)
+
+On commence par traduire notre program robotML code en ast (arbre de syntaxique ) dont les noeuds sont les differents concepts de notre languages robotML.
+ensuite on appelle la methode ast.accept(visitor) sur le premier noeud qui dont la referrence est ast.
+Par suite cette methode accept(visitor) nous ramene dans la methode visitConcretNode(ConcretNode).
+Dans cette methode on execute la traduction du concretNode puis de maniere recursive on appelle la methode accept(visitor) sur tous les nodes fils du node ConcreteNode.
+Ainsi à partir du premier nodes tous les nodes sont visiter recurivement.
+
+#### Resultats
+
+##### Fichiers contenants l'implementations du compilateur
+
+* src/semantics/visitor.ts
+* src/semantics/compiler.ts
+* src/semantics/accept-weaver.ts
+* src/cli/main.ts
+
+##### Points encours de developpement
+
 
 
 *Similar to the interpreter, the compiler uses the visitor pattern to traverse the AST and generate Arduino-compatible code.*
