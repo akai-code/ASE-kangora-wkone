@@ -234,6 +234,14 @@ Watch a demo of the RoboML DSL project in action [here](link/to/demo/video).
 
 In summary, this project involved creating a DSL for robot behavior, including domain modeling, textual modeling, interpretation, and compilation. Challenges encountered during development included...
 
+#### Compilator
+We have face a lot of challence in this developpement of the compilator:
+
+- The understanding of the visitor pattern which was very vague for us at the beginning but the project allowed us to understand its implementation and the problems to which it responds in particular the implementation of algorithms on closed classes (class to which we do not have access to code)
+- The traversal of our Abstract Syntax Tree (AST) with the Visitor pattern involved contemplating where to start and how to navigate the tree. We realized that each node in the tree has its subnodes and requires the translation of its subnodes to obtain its own translation. This insight allowed us to establish the tree traversal model."
+- We faced other challenges such as correcting circularity errors where the program loops between Node.accept(visitor) and visitor.visitCroncreteNode(Node)
+
+#### Interpretor
 - Challenge 1
 - Challenge 2
 - ...
