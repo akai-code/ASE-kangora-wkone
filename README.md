@@ -140,7 +140,7 @@ Dans l'interface visiteur on definit les methodes de visite de chaque concepts. 
 Les classe concepts sont generés par languim automatiquement. ce qui fait que ces classes sont fermées pour nous. On utilise donc le mecanisme d'extention de classe pour ajouter dynamiquement les accept(visitor) à ces classes concepts .
 ##### Ast parse diagram with visitor pattern
 
-![Texte alternatif](lien_vers_image)
+![Texte alternatif](parcours_diagram.png)
 
 On commence par traduire notre program robotML code en ast (arbre de syntaxique ) dont les noeuds sont les differents concepts de notre languages robotML.
 ensuite on appelle la methode ast.accept(visitor) sur le premier noeud qui dont la referrence est ast.
@@ -152,16 +152,79 @@ Ainsi à partir du premier nodes tous les nodes sont visiter recurivement.
 
 ##### Fichiers contenants l'implementations du compilateur
 
-* src/semantics/visitor.ts
-* src/semantics/compiler.ts
-* src/semantics/accept-weaver.ts
-* src/cli/main.ts
+* src/semantics/visitor.ts qui ce fichier contient :
+la declaration de notre interface visitor :
 
-##### Points encours de developpement
+```node
+export interface RoboMLVisitor {
+    visitProgram(node: ASTInterfaces.Program): any;
+    visitFunctionML(node: ASTInterfaces.FunctionML): any;
+   ...
+}
+```
 
+l'implementation des classe concretes des concepts:
+```node
+export class Program implements ASTInterfaces.Program {  
+   ...
+}
+...
+//
+export class FunctionML implements ASTInterfaces.FunctionML{
+   ...
+}
+```
 
+* src/semantics/compiler.ts which contains :
+The implementation of robotML visitor for compilation:
+```node
+export class ConcreteVisite implements RoboMLVisitor{
+    //ici je dois implementer toute les methodes de l'interface roboMLVisitor
+    visitProgram(node: Program): any {
+      ...
+   }
+   ...
+}
+```
+* src/semantics/accept-weaver.ts:
+contains the accept-weaving class which is the class that extend concepts class to add the accept method dynamically
+```node
+ */
+export class RoboMlAcceptWeaver {
+    weaveProgram(node : InterfaceAST.Program, accept : ValidationAcceptor) : void{
+      ...
+      }
+    weaveFunctionML(node : InterfaceAST.FunctionML, accept : ValidationAcceptor) :void{ 
+      ...
+    }
+   ...
+    checks: ValidationChecks<RobbotMlAstType> = {
+        Program : this.weaveProgram,
+        FunctionML : this.weaveFunctionML,
+         ...
+      }
+   }
 
-*Similar to the interpreter, the compiler uses the visitor pattern to traverse the AST and generate Arduino-compatible code.*
+```
+* src/cli/main.ts 
+this file contains our main function in which we start the compilation by reading the robotML file :
+```node
+//Fonction that parseAndCompile the robotMLcode code to c arduino code
+export const parseAndCompile = async (fileName: string): Promise<void> => {
+
+    const services = createRobbotMlServices(NodeFileSystem).RobbotMl;
+    const ast = await extractAstNode<Program>("program.rob",services) ;
+    const visite = new ConcreteVisite() ;
+    let compilation_result = ast.accept(visite);
+    //
+    writeInFile("./CompilationOutput/compiled_robot_code",compilation_result) ;
+};
+```
+
+##### Points non terminés
+
+- Nous avons fixer le nom du programme dans la fonction main à cause d'une erreur qu'on rencontre à ce niveau . Plus tard ce fichier sera passé en invite de commande lors de l'appel de compilateur
+- Nous avons mis un stub au niveau du concepts expression numerique car on arrive pas à recuperer la valeur constante lorsque l'expression numerique est une constante
 
 ## Demo
 
