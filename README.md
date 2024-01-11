@@ -231,7 +231,7 @@ export const parseAndCompile = async (fileName: string): Promise<void> => {
 
 #### Compilator
 
-- The robotML program :
+- The robotML program to compile:
 ```
 let void entry () {
     setSpeed(150 mm)
@@ -254,7 +254,7 @@ let void square(){
     Clock 90
 }
 ```
-- Execution of the programme
+- Executing of the compilation
 ```
 wke@P204linux:~/Bureau/Scool_Project/ASE-kangora-wkone$ ./compile.sh 
 **********************Building****************************
