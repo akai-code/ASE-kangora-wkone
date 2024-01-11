@@ -109,10 +109,10 @@ The interpreter is implemented in TypeScript and runs on a web-based simulator f
 
 #### Overview
 
-The compiler translates RoboML code into Arduino code, enabling the robot to execute the specified behavior.
-Ce compilateur resoud les problems suisvant :
-* Reduire la complexité d'expression des programmes en de notre robot car ce language est facilement nanipulabre que le c arduino code.
-* Avoir du code c arduino optimisé pour nos robots. En effet il n'est pas evident aux non specialistes d'ecrire du code optimisé dans les languages de bas niveaux.
+The compilator translates RoboML code into Arduino code, enabling the robot to execute the specified behavior.
+This compiler solves the following problems :
+* Reduce the complexity of expressing programs for our robot because this language is easily manipulable by humans compared to  c-arduino code
+* Have c-arduino code optimized for our robots. Indeed, it is not easy for non-specialists to write optimized code in low-level languages.
 
 #### Principle of implementation
 
@@ -120,40 +120,40 @@ Ce compilateur resoud les problems suisvant :
 
 ![Texte alternatif](Visitor.png)
 
-Le pattern visiteur est un patron qui permet de separer la structure de donnée et l'algorithm qui lui sera appliqué. Ainsi on separe les preocupations d'evolutions de la structure de donnée et l'algorithm. Chacun des deux entités peuvent evoluer de façon independante sans s'impacté mutuellement.
-En pratique la mise en place du pattern visiteur fait intervenir deux entités :
-* les classes à visiter : ce sont les structures de données (les classes) sur lesquelles on doit appliquer des algorithms. En principe de la POO, les algorithms sont sensés se trouver dans ces classes directement et dans ce cas l'evolution des algorithms implique la modification de des classes (ce que l'on veut justement eviter car les classes sont souvent fermées c'est à dire pas accessible au developpeur des algorithms)
-* l'interface visiteur : qui permet definit les methodes de visite de chaque chaque structure données. Il s'agit des methodes qui contiendrons les algorithm à appliquer à chaque structure de donnée.
-L'interface permet de decoupler les methodes de leurs implementation. Ce qui permet de faire evoluer les implementations sans regression sur les classes qui utilisent l'interface qui definit les methodes.
-* le visiteur concret : c'est une implementation de l'interface visiteur qui va permettre de donner une implementation de chaque methode de visite.
+The visitor pattern is a pattern that allows you to separate the data structure and the algorithm that will be applied to it. Thus we separate the concerns of evolution of the data structure and the algorithm. Each of the two entities can evolve independently without impacting each other.
+In practice, the implementation of the visitor pattern involves two entities:
+* classes to visit: these are the data structures (classes) on which algorithms must be applied. In principle of OOP, the algorithms are supposed to be found in these classes directly and in this case the evolution of the algorithms implies the modification of the classes (which we precisely want to avoid because the classes are often closed it is to say not accessible to the algorithm developer)
+* the visitor interface: which allows you to define the methods of visiting each given structure. These are the methods which will contain the algorithms to be applied to each data structure.
+The interface allows you to decouple methods from their implementation. This allows implementations to evolve without regression on classes that use the interface that defines the methods.
+* the concrete visitor: it is an implementation of the visitor interface which will make it possible to give an implementation of each visit method.
 
 ##### class extention
-L'extention de classe permet d'ajouter une nouvelle methode à un un objet de façon dynamique (sans ajouté la methode au niveau de la classe de l'objet).
-Cela peur etre util pour ajouter de nouvelle methode à un objet d'une classe fermée (une classe dont on pas accès au code) ou une classe dont on ne veut pas modifier le code.
+Class extension allows you to add a new method to an object dynamically (without adding the method at the object class level).
+This can be used to add a new method to an object of a closed class (a class whose code we cannot access) or a class whose code we do not want to modify.
 
-##### Mise en place du pattern visiteur pour notre compilateur
+##### Setting up the visitor pattern for our compiler
 
 ![Texte alternatif](pattern_apply.png)
 
-Dans le cadre de notre compilateur, les structrures de donnés ou encore classe à visiter sont les differents concepts de notre classe.
-Dans l'interface visiteur on definit les methodes de visite de chaque concepts. Dans les visiteurs concrets, on donne une implement de ces methodes qui traduise le concept visiter en son concept equivalent du language c arduino.
-Les classe concepts sont generés par languim automatiquement. ce qui fait que ces classes sont fermées pour nous. On utilise donc le mecanisme d'extention de classe pour ajouter dynamiquement les accept(visitor) à ces classes concepts .
-##### Ast parse diagram with visitor pattern
+In the context of our compiler, the data structures or classes to be visited are the different concepts of our class.
+In the visitor interface we define the visit methods for each concept. In concrete visitors, we give an implementation of these methods which translates the concept visit into its equivalent concept of the c-arduino language.
+Concept classes are generated by languim automatically. which means that these classes are closed for us. We therefore use the class extension mechanism to dynamically add accept(visitor) to these concept classes.
+##### Illustrative diagram of the traversal of our abstract syntax tree
 
 ![Texte alternatif](parcours_diagram.png)
 
-On commence par traduire notre program robotML code en ast (arbre de syntaxique ) dont les noeuds sont les differents concepts de notre languages robotML.
-ensuite on appelle la methode ast.accept(visitor) sur le premier noeud qui dont la referrence est ast.
-Par suite cette methode accept(visitor) nous ramene dans la methode visitConcretNode(ConcretNode).
-Dans cette methode on execute la traduction du concretNode puis de maniere recursive on appelle la methode accept(visitor) sur tous les nodes fils du node ConcreteNode.
-Ainsi à partir du premier nodes tous les nodes sont visiter recurivement.
+We start by translating our robotML program code into AST (abstract syntax tree) whose nodes are the different concepts of our robotML languages.
+then we call the ast.accept(visitor) method on the first node.
+As a result, this accept(visitor) method brings us back to the visitConcretNode(ConcretNode) method.
+In this method we execute the translation of the concreteNode. This translation process call the accept(visitor) method on all the child nodes of the ConcreteNode node.
+So from the first node all nodes are visited recursively.
 
 #### Resultats
 
-##### Fichiers contenants l'implementations du compilateur
+##### Files containing compiler implementations
 
-* src/semantics/visitor.ts qui ce fichier contient :
-la declaration de notre interface visitor :
+* src/semantics/visitor.ts which contains :
+the declaration of our visitor interface :
 
 ```node
 export interface RoboMLVisitor {
@@ -221,11 +221,11 @@ export const parseAndCompile = async (fileName: string): Promise<void> => {
 };
 ```
 
-##### Points non terminés
+##### Unfinished StitchesPoints non terminés
 
-- Nous avons fixer le nom du programme a compiler dans la fonction main à cause d'une erreur qu'on rencontre à ce niveau . Plus tard ce fichier sera passé en invite de commande lors de l'appel de compilateur
-- Nous fixer aussi le resultat de compilation de ASE-KANGORA-WKONE/CompilationOutput/compiled_robot_code.c
-- Nous avons mis un stub au niveau du concepts expression numerique car on arrive pas à recuperer la valeur constante lorsque l'expression numerique est une constante
+- We have fixed the name of the program to compile in the main function because of an error encountered at this level. Later this file will be passed to the command prompt when calling the compiler
+- We also fixed the compilation result of ASE-KANGORA-WKONE/CompilationOutput/compiled_robot_code.c
+- We have put a stub at the level of the numerical expression concepts because we cannot recover the constant value when the numerical expression is a constant at this stage
 
 ## Demo
 
@@ -254,7 +254,7 @@ let void square(){
     Clock 90
 }
 ```
-- Executing of the compilation
+- Executing the compilation
 ```
 wke@P204linux:~/Bureau/Scool_Project/ASE-kangora-wkone$ ./compile.sh 
 **********************Building****************************
@@ -440,7 +440,7 @@ Watch a demo of the RoboML DSL project in action [here](link/to/demo/video).
 In summary, this project involved creating a DSL for robot behavior, including domain modeling, textual modeling, interpretation, and compilation. Challenges encountered during development included...
 
 #### Compilator
-We have face a lot of challence in this developpement of the compilator:
+We have face a lot of challence in the developpement of the compilator:
 
 - The understanding of the visitor pattern which was very vague for us at the beginning but the project allowed us to understand its implementation and the problems to which it responds in particular the implementation of algorithms on closed classes (class to which we do not have access to code)
 - The traversal of our Abstract Syntax Tree (AST) with the Visitor pattern involved contemplating where to start and how to navigate the tree. We realized that each node in the tree has its subnodes and requires the translation of its subnodes to obtain its own translation. This insight allowed us to establish the tree traversal model."
