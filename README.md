@@ -223,11 +223,216 @@ export const parseAndCompile = async (fileName: string): Promise<void> => {
 
 ##### Points non terminés
 
-- Nous avons fixer le nom du programme dans la fonction main à cause d'une erreur qu'on rencontre à ce niveau . Plus tard ce fichier sera passé en invite de commande lors de l'appel de compilateur
+- Nous avons fixer le nom du programme a compiler dans la fonction main à cause d'une erreur qu'on rencontre à ce niveau . Plus tard ce fichier sera passé en invite de commande lors de l'appel de compilateur
+- Nous fixer aussi le resultat de compilation de ASE-KANGORA-WKONE/CompilationOutput/compiled_robot_code.c
 - Nous avons mis un stub au niveau du concepts expression numerique car on arrive pas à recuperer la valeur constante lorsque l'expression numerique est une constante
 
 ## Demo
 
+#### Compilator
+
+- The robotML program :
+```
+let void entry () {
+    setSpeed(150 mm)
+    var number count = 0
+    loop count < 5
+    {	
+        count = count + 1
+        square()
+    }
+}
+
+let void square(){
+    Forward 30 cm
+    Clock 90
+    Forward 300 mm
+    Clock 90
+    Forward 30 cm
+    Clock 90
+    Forward 300 mm
+    Clock 90
+}
+```
+- Execution of the programme
+```
+wke@P204linux:~/Bureau/Scool_Project/ASE-kangora-wkone$ ./compile.sh 
+**********************Building****************************
+
+> robbot-ml@0.0.1 build
+> tsc -b tsconfig.json && node esbuild.mjs
+
+[01:56:28] Build succeeded
+**********************Generating the binary of compilation function****************************
+[sudo] Mot de passe de wke : 
+
+> robbot-ml@0.0.1 langium:generate
+> langium generate
+
+Reading config from langium-config.json
+src/language/Terminals.langium:2:34 - Consider using regex instead of character ranges
+src/language/Terminals.langium:2:46 - Consider using regex instead of character ranges
+src/language/Terminals.langium:2:64 - Consider using regex instead of character ranges
+src/language/Terminals.langium:2:76 - Consider using regex instead of character ranges
+src/language/Terminals.langium:2:94 - Consider using regex instead of character ranges
+src/language/Terminals.langium:3:29 - Consider using regex instead of character ranges
+Writing generated files to /home/wke/Bureau/Scool_Project/ASE-kangora-wkone/src/language/generated
+Writing textmate grammar to /home/wke/Bureau/Scool_Project/ASE-kangora-wkone/syntaxes/robbot-ml.tmLanguage.json
+Writing monarch grammar to /home/wke/Bureau/Scool_Project/ASE-kangora-wkone/syntaxes/robbot-ml.monarch.ts
+Langium generator finished successfully in 175ms
+**********************Compilation Result****************************
+**visiting Program**
+**visiting FunctionML entry**
+**visiting block**
+**visiting MovementCommand SetSpeedCommand ***
+**visiting SetSpeedCommand ***
+**visiting variable declararion ***
+**visiting Expression NumericExpression***
+**visiting LoopCommand ***
+**visiting Expression NumericExpression***
+**visiting instruction Affectation ***
+**visiting Affectation ***
+**visiting FunctionCall square ***
+**visiting FunctionML square**
+**visiting block**
+**visiting Expression NumericExpression***
+**visiting Expression NumericExpression***
+**visiting Expression NumericExpression***
+**visiting Expression NumericExpression***
+**visiting Expression NumericExpression***
+**visiting Expression NumericExpression***
+**visiting Expression NumericExpression***
+**visiting Expression NumericExpression***
+```
+- The compilation result
+```c
+//----------compiling robot code to c arduino code result----------
+
+#include <PinChangeInt.h>
+#include <PinChangeIntConfig.h>
+#include <EEPROM.h>
+#define _NAMIKI_MOTOR    //for Namiki 22CL-103501PG80:1
+#include <fuzzy_table.h>
+#include <PID_Beta6.h>
+#include <MotorWheel.h>
+#include <Omni4WD.h>
+
+//#include <fuzzy_table.h>
+//#include <PID_Beta6.h>
+
+/*
+
+            \                    /
+   wheel1   \                    /   wheel4
+   Left     \                    /   Right
+
+
+                              power switch
+
+            /                    \
+   wheel2   /                    \   wheel3
+   Right    /                    \   Left
+
+*/
+
+/*
+  irqISR(irq1,isr1);
+  MotorWheel wheel1(5,4,12,13,&irq1);
+
+  irqISR(irq2,isr2);
+  MotorWheel wheel2(6,7,14,15,&irq2);
+
+  irqISR(irq3,isr3);
+  MotorWheel wheel3(9,8,16,17,&irq3);
+
+  irqISR(irq4,isr4);
+  MotorWheel wheel4(10,11,18,19,&irq4);
+*/
+
+irqISR(irq1, isr1);
+MotorWheel wheel1(3, 2, 4, 5, &irq1);
+
+irqISR(irq2, isr2);
+MotorWheel wheel2(11, 12, 14, 15, &irq2);
+
+irqISR(irq3, isr3);
+MotorWheel wheel3(9, 8, 16, 17, &irq3);
+
+irqISR(irq4, isr4);
+MotorWheel wheel4(10, 7, 18, 19, &irq4);
+
+
+Omni4WD Omni(&wheel1, &wheel2, &wheel3, &wheel4);
+
+void setup() {
+  //TCCR0B=TCCR0B&0xf8|0x01;    // warning!! it will change millis()
+  TCCR1B = TCCR1B & 0xf8 | 0x01; // Pin9,Pin10 PWM 31250Hz
+  TCCR2B = TCCR2B & 0xf8 | 0x01; // Pin3,Pin11 PWM 31250Hz
+
+  Omni.PIDEnable(0.31, 0.01, 0, 10);
+}
+
+void loop() {
+  Omni.demoActions(30,1500,500,false);
+
+}
+
+
+void main(){
+
+  setSpeedMMPS(2 mm);
+  number count = 35;
+  while(count<=35){
+      count=2;;
+      square();
+    };
+};
+
+void square(){
+
+  int speed = getSpeedMMPS() ;
+  float distance = 35;
+  unsign int time =  distance/speed ;
+  runTime(speed,0,time);
+
+  int speed = getSpeedMMPS() ;
+  float distance = 35;
+  unsign int time =  distance/speed ;
+  runTime(speed,1,time);
+
+  int speed = getSpeedMMPS() ;
+  float distance = 35;
+  unsign int time =  distance/speed ;
+  runTime(speed,0,time);
+
+  int speed = getSpeedMMPS() ;
+  float distance = 35;
+  unsign int time =  distance/speed ;
+  runTime(speed,1,time);
+
+  int speed = getSpeedMMPS() ;
+  float distance = 35;
+  unsign int time =  distance/speed ;
+  runTime(speed,0,time);
+
+  int speed = getSpeedMMPS() ;
+  float distance = 35;
+  unsign int time =  distance/speed ;
+  runTime(speed,1,time);
+
+  int speed = getSpeedMMPS() ;
+  float distance = 35;
+  unsign int time =  distance/speed ;
+  runTime(speed,0,time);
+
+  int speed = getSpeedMMPS() ;
+  float distance = 35;
+  unsign int time =  distance/speed ;
+  runTime(speed,1,time);
+
+};
+```
+#### Interpretor
 Watch a demo of the RoboML DSL project in action [here](link/to/demo/video).
 
 ## Summary and Challenges
