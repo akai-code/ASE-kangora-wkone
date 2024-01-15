@@ -175,16 +175,15 @@ export class InterpretorVisitor implements RoboMLVisitor {
     }
 
     visitForwardCommand(node: ForwardCommand): any {
-        const distance = this.visitNumericExpression(node.distance);
-        // Utilisez la scène pour déplacer le robot en avant
-        this.scene.robot.move(distance);
+        console.log("Visiting ForwardCommand");
+        this.scene.robot.move(node.distance);
     }
 
     visitClockwiseCommand(node: ClockwiseCommand): any {
-    const angle = this.visitNumericExpression(node.angle); // Assurez-vous d'implémenter visitNumericExpression
-    // Utilisez la scène pour faire tourner le robot dans le sens horaire
-    this.scene.robot.turn(angle)
-}
+        console.log("Visiting ClockwiseCommand");
+        // Utilisez la scène pour faire tourner le robot dans le sens horaire
+        this.scene.robot.turn(node.angle)
+    }
 
     visitControlCommand(node: ControlCommand): any {
         // Logique pour interpréter une commande de contrôle
@@ -225,11 +224,9 @@ export class InterpretorVisitor implements RoboMLVisitor {
     
 
     visitSetSpeedCommand(node: SetSpeedCommand): any {
-        console.log("Speed ::" + node.speed);
-        const speed = this.visitNumericExpression(node.speed);
-        console.log("vitesse : " + speed);
+        //console.log("vitesse : " + speed);
         // Utilisez la scène pour définir la vitesse du robot
-        this.scene.robot.speed = speed;
+        //this.scene.robot.speed = speed;
     }
 
     visitGetDistanceCommand(node: GetDistanceCommand): any {
@@ -246,13 +243,12 @@ export class InterpretorVisitor implements RoboMLVisitor {
 
     visitVariableDeclaration(node: VariableDeclaration): any {
         const context = this.getCurrentContext();
-        console.log("Current context : " + Array.from(context.variables.keys()));
         const variableName = node.name;
         const type = node.type;
         const initialValue = node.initialValue
-        console.log("Variable name : " + variableName);
-        console.log("Variable type : " + type);
-        console.log("Variable initial value : " + initialValue);
+        //console.log("Variable name : " + variableName);
+        //console.log("Variable type : " + type);
+        //console.log("Variable initial value : " + initialValue);
     
         if (!context.variables.has(variableName)) {
             if (type === 'number') {

@@ -159,11 +159,11 @@ export class MovementCommand implements ASTInterfaces.MovementCommand {
 
 export class ForwardCommand implements ASTInterfaces.ForwardCommand {
     $type: 'ForwardCommand' = 'ForwardCommand';
-    distance: NumericExpression;
+    distance: number;
     unit: ASTInterfaces.UnitType;
     $container: ASTInterfaces.Instruction;
 
-    constructor(distance: NumericExpression, unit: ASTInterfaces.UnitType, $container: ASTInterfaces.Instruction) {
+    constructor(distance: number, unit: ASTInterfaces.UnitType, $container: ASTInterfaces.Instruction) {
         this.distance = distance;
         this.unit = unit;
         this.$container = $container;
@@ -176,10 +176,10 @@ export class ForwardCommand implements ASTInterfaces.ForwardCommand {
 
 export class ClockwiseCommand implements ASTInterfaces.ClockwiseCommand {
     $type: 'ClockwiseCommand' = 'ClockwiseCommand';
-    angle: NumericExpression;
+    angle: number;
     $container: ASTInterfaces.Instruction;
 
-    constructor(angle: NumericExpression, $container: ASTInterfaces.Instruction) {
+    constructor(angle: number, $container: ASTInterfaces.Instruction) {
         this.angle = angle;
         this.$container = $container;
     }

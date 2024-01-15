@@ -38,11 +38,11 @@ MovementCommand returns MovementCommand:
 ;
 
 ForwardCommand returns ForwardCommand:
-    'Forward' distance=NumericExpression unit=UnitType
+    'Forward' distance=INT unit=UnitType
 ;
 
 ClockwiseCommand returns ClockwiseCommand:
-    'Clock' angle=NumericExpression
+    'Clock' angle=INT
 ;
 
 SetSpeedCommand returns SetSpeedCommand:
