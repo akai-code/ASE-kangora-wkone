@@ -222,7 +222,7 @@ export const parseAndCompile = async (fileName: string): Promise<void> => {
 };
 ```
 
-##### Unfinished StitchesPoints non terminés
+##### unfinished stitch
 
 - We have fixed the name of the program to compile in the main function because of an error encountered at this level. Later this file will be passed to the command prompt when calling the compiler
 - We also fixed the compilation result of ASE-KANGORA-WKONE/CompilationOutput/compiled_robot_code.c
